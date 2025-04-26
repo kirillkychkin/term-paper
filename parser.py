@@ -61,47 +61,59 @@ tags_keywords = {
     "data science": ["data science", "data analysis", "pandas", "numpy"],
 }
 
-def get_repos(query, max_pages=2):
-    """Получение репозиториев с пагинацией"""
+def get_repos(query):
     repos = []
-    # Пагинация с сортировкой по звёздам (популярные выше)
-    for page in range(1, max_pages + 1):
+    page = 1
+    while True:
         print(f"Fetching page {page}...")
         url = f'https://api.github.com/search/repositories?q={query}&sort=stars&order=desc&per_page={per_page}&page={page}'
-        response = requests.get(url, headers=headers)
-        if response.status_code != 200:
-            print(f"Error fetching repos: {response.status_code}")
+        response = requests_get(url, headers=headers)
+
+        if response is None:
+            print("Giving up fetching repositories.")
             break
         data = response.json()
-        repos.extend(data.get('items', []))
-        time.sleep(2)  # Задержка между страницами
+        items = data.get('items', [])
+
+        if not items:
+            print("No more repositories found. Stopping.")
+            break
+
+        repos.extend(items)
+        print(f"Fetched {len(items)} repositories on page {page}")
+
+        page += 1
+        time.sleep(2)
+
     return repos
 
+
 def get_readme(owner, repo_name):
-    """Получение и декодирование README"""
     print(f"Fetching README for {owner}/{repo_name}...")
     url = f'https://api.github.com/repos/{owner}/{repo_name}/readme'
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        # Декодирование base64 контента с обработкой ошибок кодировки
+    response = requests_get(url, headers=headers)
+
+    if response and response.status_code == 200:
         content = base64.b64decode(response.json()['content']).decode('utf-8', errors='ignore')
         print(f"Successfully fetched README for {owner}/{repo_name}")
         return content.lower()
     else:
-        print(f"Failed to fetch README for {owner}/{repo_name}: {response.status_code}")
+        print(f"Failed to fetch README for {owner}/{repo_name}")
         return ""
 
+
 def get_languages(owner, repo_name):
-    """Получение статистики по языкам"""
     print(f"Fetching languages for {owner}/{repo_name}...")
     url = f'https://api.github.com/repos/{owner}/{repo_name}/languages'
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
+    response = requests_get(url, headers=headers)
+
+    if response and response.status_code == 200:
         print(f"Successfully fetched languages for {owner}/{repo_name}")
         return response.json()
     else:
-        print(f"Failed to fetch languages for {owner}/{repo_name}: {response.status_code}")
+        print(f"Failed to fetch languages for {owner}/{repo_name}")
         return {}
+
 
 def tag_repo(repo, readme_text):
     """Тегирование репозитория на основе описания и README"""
