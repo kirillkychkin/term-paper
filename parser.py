@@ -15,6 +15,38 @@ headers = {
     'Accept': 'application/vnd.github.v3+json'  # Версия API с поддержкой topics и languages
 }
 
+def requests_get(url, headers=None, max_retries=3):
+    """Безопасный запрос с обработкой превышения лимита и повторами"""
+    attempt = 0
+    while attempt < max_retries:
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 403:
+            # Проверяем, не превышен ли лимит запросов
+            if 'X-RateLimit-Reset' in response.headers:
+                reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 60))
+                wait_seconds = reset_time - int(time.time()) + 5  # Небольшой запас
+                print(f"Rate limit exceeded. Sleeping for {wait_seconds} seconds...")
+                time.sleep(wait_seconds)
+                continue  # После ожидания повторяем запрос
+            else:
+                print("403 Forbidden received without RateLimit headers. Waiting 60 seconds...")
+                time.sleep(60)
+                continue
+
+        if response.status_code in [500, 502, 503, 504]:
+            # Ошибки сервера, повторяем попытку
+            print(f"Server error {response.status_code}. Retrying in 10 seconds...")
+            time.sleep(10)
+            attempt += 1
+            continue
+
+        return response  # Всё хорошо, возвращаем ответ
+
+    print(f"Failed to fetch {url} after {max_retries} attempts.")
+    return None
+
+
 # Поисковый запрос
 search_query = 'bachelor thesis OR coursework OR capstone project'
 per_page = 30  # Оптимальное значение для баланса скорости и количества данных
