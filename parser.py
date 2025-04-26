@@ -46,20 +46,9 @@ def requests_get(url, headers=None, max_retries=3):
     print(f"Failed to fetch {url} after {max_retries} attempts.")
     return None
 
-
 # Поисковый запрос
 search_query = 'bachelor thesis OR coursework OR capstone project'
 per_page = 30  # Оптимальное значение для баланса скорости и количества данных
-
-# Словарь тегов с ключевыми словами для категоризации
-tags_keywords = {
-    "python": ["python"],
-    "unity": ["unity", "c#"],
-    "machine learning": ["ml", "machine learning", "deep learning", "neural network"],
-    "game development": ["game", "unity", "unreal"],
-    "web development": ["web", "website", "frontend", "backend", "fullstack", "django", "flask"],
-    "data science": ["data science", "data analysis", "pandas", "numpy"],
-}
 
 def get_repos(query):
     repos = []
@@ -87,7 +76,6 @@ def get_repos(query):
 
     return repos
 
-
 def get_readme(owner, repo_name):
     print(f"Fetching README for {owner}/{repo_name}...")
     url = f'https://api.github.com/repos/{owner}/{repo_name}/readme'
@@ -101,7 +89,6 @@ def get_readme(owner, repo_name):
         print(f"Failed to fetch README for {owner}/{repo_name}")
         return ""
 
-
 def get_languages(owner, repo_name):
     print(f"Fetching languages for {owner}/{repo_name}...")
     url = f'https://api.github.com/repos/{owner}/{repo_name}/languages'
@@ -114,18 +101,6 @@ def get_languages(owner, repo_name):
         print(f"Failed to fetch languages for {owner}/{repo_name}")
         return {}
 
-def tag_repo(repo, readme_text):
-    """Тегирование репозитория на основе описания и README"""
-    print(f"Tagging repository {repo.get('full_name')}...")
-    # Комбинирование данных для более точного тегирования
-    combined_text = (repo.get('description') or '').lower() + ' ' + readme_text
-    repo_tags = []
-    for tag, keywords in tags_keywords.items():
-        # Добавление тега при совпадении любого ключевого слова
-        if any(kw in combined_text for kw in keywords):
-            repo_tags.append(tag)
-    print(f"Tags found: {repo_tags}")
-    return repo_tags
 
 def save_to_file(repos, filename="repos_data.json"):
     """Сохранение данных в JSON файл"""
@@ -133,10 +108,10 @@ def save_to_file(repos, filename="repos_data.json"):
         json.dump(repos, f, ensure_ascii=False, indent=2)
 
 def main():
-    repos = get_repos(search_query, max_pages=5)
+    repos = get_repos(search_query)
     print(f"Fetched {len(repos)} repositories")
 
-    tagged_repos = []
+    res_repos = []
     for repo in repos:
         # Извлечение владельца и имени репозитория из структуры ответа
         owner, repo_name = repo['owner']['login'], repo['name']
@@ -147,20 +122,19 @@ def main():
         main_languages = sorted(languages_data.items(), key=lambda item: item[1], reverse=True)
         main_languages = [lang for lang, _ in main_languages]
 
-        # tags = tag_repo(repo, readme_text)
-
-        tagged_repos.append({
+        res_repos.append({
             "name": repo.get('full_name'),
             "url": repo.get('html_url'),
             "description": repo.get('description'),
             "languages_detected": main_languages,
-            # "tags": tags
+            "readme_text": readme_text,
+            "repo": repo
         })
 
         time.sleep(1)  # Вежливая задержка между запросами
 
-    save_to_file(tagged_repos)
-    print("Saved tagged repositories to repos_data.json")
+    save_to_file(res_repos)
+    print("Saved repositories to repos_data.json")
 
 if __name__ == "__main__":
     main()
