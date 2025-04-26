@@ -1,28 +1,25 @@
-# Импорт необходимых библиотек
-import requests  # Для выполнения HTTP-запросов к API GitHub
-import time  # Для добавления задержки между запросами
-import json  # Для работы с JSON-данными
-from dotenv import load_dotenv  # Для загрузки переменных окружения из .env файла
-import os  # Для работы с операционной системой и переменными окружения
+import requests
+import time
+import json
+import base64
+import os
+from dotenv import load_dotenv
 
-# Загружаем переменные окружения из файла .env
+# Безопасная загрузка токена из .env файла
 load_dotenv()
-# Получаем GitHub токен из переменных окружения для аутентификации
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 
-# Заголовки HTTP-запроса для аутентификации и указания формата ответа
+# Headers для аутентификации с повышенным лимитом запросов (5000/час вместо 60)
 headers = {
-    'Authorization': f'token {GITHUB_TOKEN}',  # Токен для доступа к API GitHub
-    'Accept': 'application/vnd.github.v3+json'  # Запрашиваем версию 3 API
+    'Authorization': f'token {GITHUB_TOKEN}',
+    'Accept': 'application/vnd.github.v3+json'  # Версия API с поддержкой topics и languages
 }
 
-# Поисковый запрос для GitHub:
-# Ищем репозитории, содержащие в описании "bachelor thesis" ИЛИ "coursework" и т.д.
+# Поисковый запрос
 search_query = 'bachelor thesis OR coursework OR capstone project'
-per_page = 30  # Количество результатов на странице (GitHub позволяет максимум 100)
+per_page = 30  # Оптимальное значение для баланса скорости и количества данных
 
-# Словарь для тегирования репозиториев по ключевым словам
-# Ключи - названия тегов, значения - списки ключевых слов для этого тега
+# Словарь тегов с ключевыми словами для категоризации
 tags_keywords = {
     "python": ["python"],
     "unity": ["unity", "c#"],
@@ -33,98 +30,94 @@ tags_keywords = {
 }
 
 def get_repos(query, max_pages=2):
-    """
-    Получает список репозиториев с GitHub по заданному запросу.
-    
-    Параметры:
-        query (str): Поисковый запрос
-        max_pages (int): Максимальное количество страниц результатов для получения
-        
-    Возвращает:
-        list: Список репозиториев
-    """
+    """Получение репозиториев с пагинацией"""
     repos = []
-    # Проходим по страницам результатов
+    # Пагинация с сортировкой по звёздам (популярные выше)
     for page in range(1, max_pages + 1):
         print(f"Fetching page {page}...")
-        # Формируем URL для запроса с параметрами поиска, сортировки и пагинации
         url = f'https://api.github.com/search/repositories?q={query}&sort=stars&order=desc&per_page={per_page}&page={page}'
-        # Отправляем GET-запрос с заголовками аутентификации
         response = requests.get(url, headers=headers)
-        
-        # Проверяем статус ответа
         if response.status_code != 200:
-            print(f"Error: {response.status_code}")
+            print(f"Error fetching repos: {response.status_code}")
             break
-        
-        # Парсим JSON-ответ
         data = response.json()
-        # Добавляем найденные репозитории в общий список
         repos.extend(data.get('items', []))
-        # Делаем паузу, чтобы не превысить лимит запросов к API
-        time.sleep(2)
-    
+        time.sleep(2)  # Задержка между страницами
     return repos
 
-def tag_repo(repo):
-    """
-    Добавляет теги к репозиторию на основе его описания и тем.
-    
-    Параметры:
-        repo (dict): Данные репозитория
-        
-    Возвращает:
-        list: Список тегов для репозитория
-    """
-    # Собираем весь текст для анализа (описание + темы)
-    text = (repo.get('description') or '').lower() + ' ' + ' '.join(repo.get('topics', []))
+def get_readme(owner, repo_name):
+    """Получение и декодирование README"""
+    print(f"Fetching README for {owner}/{repo_name}...")
+    url = f'https://api.github.com/repos/{owner}/{repo_name}/readme'
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        # Декодирование base64 контента с обработкой ошибок кодировки
+        content = base64.b64decode(response.json()['content']).decode('utf-8', errors='ignore')
+        print(f"Successfully fetched README for {owner}/{repo_name}")
+        return content.lower()
+    else:
+        print(f"Failed to fetch README for {owner}/{repo_name}: {response.status_code}")
+        return ""
+
+def get_languages(owner, repo_name):
+    """Получение статистики по языкам"""
+    print(f"Fetching languages for {owner}/{repo_name}...")
+    url = f'https://api.github.com/repos/{owner}/{repo_name}/languages'
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        print(f"Successfully fetched languages for {owner}/{repo_name}")
+        return response.json()
+    else:
+        print(f"Failed to fetch languages for {owner}/{repo_name}: {response.status_code}")
+        return {}
+
+def tag_repo(repo, readme_text):
+    """Тегирование репозитория на основе описания и README"""
+    print(f"Tagging repository {repo.get('full_name')}...")
+    # Комбинирование данных для более точного тегирования
+    combined_text = (repo.get('description') or '').lower() + ' ' + readme_text
     repo_tags = []
-    
-    # Проверяем каждую категорию тегов
     for tag, keywords in tags_keywords.items():
-        # Если хотя бы одно ключевое слово найдено в тексте
-        if any(kw in text for kw in keywords):
-            repo_tags.append(tag)  # Добавляем соответствующий тег
-    
+        # Добавление тега при совпадении любого ключевого слова
+        if any(kw in combined_text for kw in keywords):
+            repo_tags.append(tag)
+    print(f"Tags found: {repo_tags}")
     return repo_tags
 
 def save_to_file(repos, filename="repos_data.json"):
-    """
-    Сохраняет данные о репозиториях в JSON-файл.
-    
-    Параметры:
-        repos (list): Список репозиториев для сохранения
-        filename (str): Имя файла для сохранения
-    """
+    """Сохранение данных в JSON файл"""
     with open(filename, 'w', encoding='utf-8') as f:
-        # Записываем данные с отступами для удобного чтения
         json.dump(repos, f, ensure_ascii=False, indent=2)
 
 def main():
-    """
-    Основная функция: выполняет поиск, тегирование и сохранение репозиториев.
-    """
-    # Получаем репозитории (ищем 5 страниц результатов)
     repos = get_repos(search_query, max_pages=5)
     print(f"Fetched {len(repos)} repositories")
 
-    # Добавляем теги к каждому репозиторию
     tagged_repos = []
     for repo in repos:
-        tags = tag_repo(repo)
-        # Формируем структуру данных для сохранения
+        # Извлечение владельца и имени репозитория из структуры ответа
+        owner, repo_name = repo['owner']['login'], repo['name']
+
+        readme_text = get_readme(owner, repo_name)
+        languages_data = get_languages(owner, repo_name)
+        # Сортировка языков по количеству кода (убывание)
+        main_languages = sorted(languages_data.items(), key=lambda item: item[1], reverse=True)
+        main_languages = [lang for lang, _ in main_languages]
+
+        tags = tag_repo(repo, readme_text)
+
         tagged_repos.append({
-            "name": repo.get('full_name'),  # Полное имя репозитория
-            "url": repo.get('html_url'),  # Ссылка на репозиторий
-            "description": repo.get('description'),  # Описание
-            "language": repo.get('language'),  # Основной язык программирования
-            "tags": tags  # Наши теги
+            "name": repo.get('full_name'),
+            "url": repo.get('html_url'),
+            "description": repo.get('description'),
+            "languages_detected": main_languages,
+            "tags": tags
         })
 
-    # Сохраняем результаты в файл
+        time.sleep(1)  # Вежливая задержка между запросами
+
     save_to_file(tagged_repos)
     print("Saved tagged repositories to repos_data.json")
 
-# Точка входа в программу
 if __name__ == "__main__":
     main()
