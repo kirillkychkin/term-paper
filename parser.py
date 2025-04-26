@@ -114,7 +114,6 @@ def get_languages(owner, repo_name):
         print(f"Failed to fetch languages for {owner}/{repo_name}")
         return {}
 
-
 def tag_repo(repo, readme_text):
     """Тегирование репозитория на основе описания и README"""
     print(f"Tagging repository {repo.get('full_name')}...")
@@ -148,14 +147,14 @@ def main():
         main_languages = sorted(languages_data.items(), key=lambda item: item[1], reverse=True)
         main_languages = [lang for lang, _ in main_languages]
 
-        tags = tag_repo(repo, readme_text)
+        # tags = tag_repo(repo, readme_text)
 
         tagged_repos.append({
             "name": repo.get('full_name'),
             "url": repo.get('html_url'),
             "description": repo.get('description'),
             "languages_detected": main_languages,
-            "tags": tags
+            # "tags": tags
         })
 
         time.sleep(1)  # Вежливая задержка между запросами
