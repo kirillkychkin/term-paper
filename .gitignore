@@ -4,7 +4,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-repos_data.json
+# repos_data.json
 # C extensions
 *.so
 
