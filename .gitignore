@@ -8,6 +8,8 @@ __pycache__/
 # C extensions
 *.so
 
+store.py
+
 # fasttext model
 lid.176.bin
 
