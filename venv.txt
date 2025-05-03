@@ -1,0 +1,3 @@
+source my-venv/bin/activate
+python3 <needed_file>
+deactivate
