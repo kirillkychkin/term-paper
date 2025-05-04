@@ -12,7 +12,7 @@ def save_to_file(repos, filename="repos_translated_data.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(repos, f, ensure_ascii=False, indent=2)
 
-def clean_readme(text: str) -> str:
+def clean_text(text: str) -> str:
     # Remove fenced code blocks ```...``` with language or without
     text = re.sub(r'```[\s\S]*?```', '', text)
 
@@ -91,27 +91,52 @@ def read_json_file(filename="repos_data.json"):
         data = json.load(file)
     return data
 
-def translate_readme(data):
-    translated_readmes = []
-    counter = 0
+def translate_repo(data):
+    translated_repos = []
+    counter = 1
     for repo in data:
         readme_text_plain = repo['readme_text'].replace('\n', ' ')
         if(readme_text_plain == ""):
             continue
-        readme_clean = clean_readme(readme_text_plain)
-        readme_lang, confidence = predict_lang(readme_clean)
-        entry = {}
+        readme_clean = clean_text(readme_text_plain)
+        readme_lang, confidence_readme = predict_lang(readme_clean)
         if(readme_lang != "en"):
-            try:
-                entry["readme"] = translate_text(repo['readme_text'], 
-                from_code=readme_lang)
-                entry["readme_before"] = repo['readme_text']
-                counter += 1
-                print("end translation procedure # " + str(counter))
-                translated_readmes.append(entry)
-            except Exception as e:
-                print(f"Translation error: {e}")
-    return translated_readmes
+            repo['readme_lang'] = readme_lang
+            print("start readme translation to english " + str(counter))
+            repo["translated_readme_text"] = translate_text(repo['readme_text'], 
+            from_code=readme_lang)
+            if(readme_lang != "ru"):
+                print("start readme translation to russian " + str(counter))
+                repo['readme_russian'] = translate_text(repo['readme_text'], 
+            from_code=readme_lang, to_code="ru")
+                
+        else:
+            repo['readme_lang'] = 'en'
+            print("start readme translation to russian " + str(counter))
+            repo['readme_russian'] = translate_text(repo['readme_text'], 
+            from_code=readme_lang, to_code="ru")
+        
+        description_clean = clean_text(repo['description'])
+        description_lang, confidence_description = predict_lang(description_clean)         
+        if(description_lang != "en"):
+            print("start description translation to english " + str(counter))
+            repo['description_lang'] = description_lang
+            repo["translated_description"] = translate_text(repo['description'], 
+                from_code=readme_lang)  
+            if(description_lang != "ru"):
+                print("start description translation to russian " + str(counter))
+                repo["description_russian"] = translate_text(repo['description'], 
+                from_code=readme_lang, to_code="ru")  
+        else:
+            repo['description_lang'] = 'en'
+            print("start description translation to russian " + str(counter))
+            repo["description_russian"] = translate_text(repo['description'], 
+                from_code=readme_lang, to_code="ru")  
+
+        print("repo " + str(counter) + " was translated")
+        counter += 1
+        translated_repos.append(repo)
+    return translated_repos
 
 def get_languages(data):
     languages = set()
@@ -119,7 +144,7 @@ def get_languages(data):
         readme_text_plain = repo['readme_text'].replace('\n', ' ')
         if(readme_text_plain == ""):
             continue
-        readme_clean = clean_readme(readme_text_plain)
+        readme_clean = clean_text(readme_text_plain)
         readme_lang, confidence = predict_lang(readme_clean)
         if(readme_lang != "en"):
             languages.add(readme_lang)
@@ -127,7 +152,7 @@ def get_languages(data):
 
 def main():
     data = read_json_file()
-    data = translate_readme(data)
+    data = translate_repo(data)
     save_to_file(data)
     # langs = get_languages(data)
     # print(langs)
