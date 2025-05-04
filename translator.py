@@ -4,6 +4,7 @@ import re
 import argostranslate.translate # type: ignore
 from bs4 import BeautifulSoup # type: ignore
 installed_languages = argostranslate.translate.get_installed_languages()
+import time
 
 model = fasttext.load_model("lid.176.bin")
 
@@ -151,9 +152,11 @@ def get_languages(data):
     return languages
 
 def main():
+    start_time = time.time()
     data = read_json_file()
     data = translate_repo(data)
     save_to_file(data)
+    print("--- %s seconds ---" % (time.time() - start_time))
     # langs = get_languages(data)
     # print(langs)
 
