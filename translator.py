@@ -14,6 +14,8 @@ def save_to_file(repos, filename="repos_translated_data.json"):
         json.dump(repos, f, ensure_ascii=False, indent=2)
 
 def clean_text(text: str) -> str:
+    if text is None:
+        return ""
     # Remove fenced code blocks ```...``` with language or without
     text = re.sub(r'```[\s\S]*?```', '', text)
 
@@ -97,43 +99,44 @@ def translate_repo(data):
     counter = 1
     for repo in data:
         readme_text_plain = repo['readme_text'].replace('\n', ' ')
-        if(readme_text_plain == ""):
-            continue
-        readme_clean = clean_text(readme_text_plain)
-        readme_lang, confidence_readme = predict_lang(readme_clean)
-        if(readme_lang != "en"):
-            repo['readme_lang'] = readme_lang
-            print("start readme translation to english " + str(counter))
-            repo["translated_readme_text"] = translate_text(repo['readme_text'], 
-            from_code=readme_lang)
-            if(readme_lang != "ru"):
+        if(readme_text_plain != ""):
+            readme_clean = clean_text(readme_text_plain)
+            readme_lang, confidence_readme = predict_lang(readme_clean)
+            if(readme_lang != "en"):
+                repo['readme_lang'] = readme_lang
+                print("start readme translation to english " + str(counter))
+                repo["translated_readme_text"] = translate_text(repo['readme_text'], 
+                from_code=readme_lang)
+                if(readme_lang != "ru"):
+                    print("start readme translation to russian " + str(counter))
+                    repo['readme_russian'] = translate_text(repo['translated_readme_text'], 
+                from_code=readme_lang, to_code="ru")
+                    
+            else:
+                repo['readme_lang'] = 'en'
                 print("start readme translation to russian " + str(counter))
                 repo['readme_russian'] = translate_text(repo['readme_text'], 
-            from_code=readme_lang, to_code="ru")
-                
-        else:
-            repo['readme_lang'] = 'en'
-            print("start readme translation to russian " + str(counter))
-            repo['readme_russian'] = translate_text(repo['readme_text'], 
-            from_code=readme_lang, to_code="ru")
+                from_code=readme_lang, to_code="ru")
         
         description_clean = clean_text(repo['description'])
-        description_lang, confidence_description = predict_lang(description_clean)         
-        if(description_lang != "en"):
-            print("start description translation to english " + str(counter))
-            repo['description_lang'] = description_lang
-            repo["translated_description"] = translate_text(repo['description'], 
-                from_code=readme_lang)  
-            if(description_lang != "ru"):
+        if(description_clean != ""):
+            description_lang, confidence_description = predict_lang(description_clean)         
+            if(description_lang != "en"):
+                print("start description translation to english " + str(counter))
+                repo['description_lang'] = description_lang
+                repo["translated_description"] = translate_text(repo['description'], 
+                    from_code=readme_lang)  
+                if(description_lang != "ru"):
+                    print("start description translation to russian " + str(counter))
+                    repo["description_russian"] = translate_text(repo['translated_description'], 
+                    from_code=readme_lang, to_code="ru")  
+            else:
+                repo['description_lang'] = 'en'
                 print("start description translation to russian " + str(counter))
                 repo["description_russian"] = translate_text(repo['description'], 
-                from_code=readme_lang, to_code="ru")  
-        else:
-            repo['description_lang'] = 'en'
-            print("start description translation to russian " + str(counter))
-            repo["description_russian"] = translate_text(repo['description'], 
-                from_code=readme_lang, to_code="ru")  
-
+                    from_code=readme_lang, to_code="ru")  
+        if(description_clean == "" and readme_text_plain == ""):
+            repo['empty_text'] = True
         print("repo " + str(counter) + " was translated")
         counter += 1
         translated_repos.append(repo)
