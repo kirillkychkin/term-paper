@@ -1,0 +1,437 @@
+[
+  {
+    "name": "Tcl"
+  },
+  {
+    "name": "ASL"
+  },
+  {
+    "name": "GLSL"
+  },
+  {
+    "name": "Emacs Lisp"
+  },
+  {
+    "name": "Typst"
+  },
+  {
+    "name": "HTML"
+  },
+  {
+    "name": "HCL"
+  },
+  {
+    "name": "FreeMarker"
+  },
+  {
+    "name": "TSQL"
+  },
+  {
+    "name": "PostScript"
+  },
+  {
+    "name": "Perl"
+  },
+  {
+    "name": "OpenEdge ABL"
+  },
+  {
+    "name": "Stata"
+  },
+  {
+    "name": "JavaScript"
+  },
+  {
+    "name": "Processing"
+  },
+  {
+    "name": "C#"
+  },
+  {
+    "name": "Objective-C++"
+  },
+  {
+    "name": "PowerShell"
+  },
+  {
+    "name": "Shell"
+  },
+  {
+    "name": "Standard ML"
+  },
+  {
+    "name": "OCaml"
+  },
+  {
+    "name": "Scala"
+  },
+  {
+    "name": "ANTLR"
+  },
+  {
+    "name": "Fortran"
+  },
+  {
+    "name": "Racket"
+  },
+  {
+    "name": "Nix"
+  },
+  {
+    "name": "Dart"
+  },
+  {
+    "name": "Lex"
+  },
+  {
+    "name": "Limbo"
+  },
+  {
+    "name": "ASP"
+  },
+  {
+    "name": "TeX"
+  },
+  {
+    "name": "Java"
+  },
+  {
+    "name": "Procfile"
+  },
+  {
+    "name": "Terra"
+  },
+  {
+    "name": "HLSL"
+  },
+  {
+    "name": "Rust"
+  },
+  {
+    "name": "V"
+  },
+  {
+    "name": "Visual Basic"
+  },
+  {
+    "name": "AIDL"
+  },
+  {
+    "name": "Scheme"
+  },
+  {
+    "name": "Gherkin"
+  },
+  {
+    "name": "ShaderLab"
+  },
+  {
+    "name": "Groovy"
+  },
+  {
+    "name": "Smarty"
+  },
+  {
+    "name": "Smalltalk"
+  },
+  {
+    "name": "Starlark"
+  },
+  {
+    "name": "Awk"
+  },
+  {
+    "name": "Roff"
+  },
+  {
+    "name": "Ruby"
+  },
+  {
+    "name": "C"
+  },
+  {
+    "name": "Haskell"
+  },
+  {
+    "name": "Bicep"
+  },
+  {
+    "name": "PHP"
+  },
+  {
+    "name": "Verilog"
+  },
+  {
+    "name": "Kotlin"
+  },
+  {
+    "name": "Assembly"
+  },
+  {
+    "name": "R"
+  },
+  {
+    "name": "EmberScript"
+  },
+  {
+    "name": "SuperCollider"
+  },
+  {
+    "name": "ASP.NET"
+  },
+  {
+    "name": "SQLPL"
+  },
+  {
+    "name": "AGS Script"
+  },
+  {
+    "name": "SystemVerilog"
+  },
+  {
+    "name": "Hack"
+  },
+  {
+    "name": "M4"
+  },
+  {
+    "name": "Puppet"
+  },
+  {
+    "name": "Solidity"
+  },
+  {
+    "name": "SCSS"
+  },
+  {
+    "name": "Mako"
+  },
+  {
+    "name": "CoffeeScript"
+  },
+  {
+    "name": "CLIPS"
+  },
+  {
+    "name": "XSLT"
+  },
+  {
+    "name": "ApacheConf"
+  },
+  {
+    "name": "Vue"
+  },
+  {
+    "name": "Go"
+  },
+  {
+    "name": "Mask"
+  },
+  {
+    "name": "M"
+  },
+  {
+    "name": "BitBake"
+  },
+  {
+    "name": "VHDL"
+  },
+  {
+    "name": "Q#"
+  },
+  {
+    "name": "Lua"
+  },
+  {
+    "name": "Common Lisp"
+  },
+  {
+    "name": "Rich Text Format"
+  },
+  {
+    "name": "F#"
+  },
+  {
+    "name": "Csound"
+  },
+  {
+    "name": "Groff"
+  },
+  {
+    "name": "CMake"
+  },
+  {
+    "name": "Faust"
+  },
+  {
+    "name": "RPC"
+  },
+  {
+    "name": "G-code"
+  },
+  {
+    "name": "SWIG"
+  },
+  {
+    "name": "Inno Setup"
+  },
+  {
+    "name": "Arduino"
+  },
+  {
+    "name": "PureBasic"
+  },
+  {
+    "name": "Ada"
+  },
+  {
+    "name": "Pascal"
+  },
+  {
+    "name": "Erlang"
+  },
+  {
+    "name": "Swift"
+  },
+  {
+    "name": "Pawn"
+  },
+  {
+    "name": "Nu"
+  },
+  {
+    "name": "Visual Basic .NET"
+  },
+  {
+    "name": "Elm"
+  },
+  {
+    "name": "Thrift"
+  },
+  {
+    "name": "Mustache"
+  },
+  {
+    "name": "Pug"
+  },
+  {
+    "name": "PLSQL"
+  },
+  {
+    "name": "Gnuplot"
+  },
+  {
+    "name": "Vala"
+  },
+  {
+    "name": "Vim Script"
+  },
+  {
+    "name": "C++"
+  },
+  {
+    "name": "Yacc"
+  },
+  {
+    "name": "Sass"
+  },
+  {
+    "name": "Objective-C"
+  },
+  {
+    "name": "VBA"
+  },
+  {
+    "name": "Kit"
+  },
+  {
+    "name": "D"
+  },
+  {
+    "name": "Jupyter Notebook"
+  },
+  {
+    "name": "Jinja"
+  },
+  {
+    "name": "Julia"
+  },
+  {
+    "name": "PLpgSQL"
+  },
+  {
+    "name": "Cython"
+  },
+  {
+    "name": "EJS"
+  },
+  {
+    "name": "GDScript"
+  },
+  {
+    "name": "Twig"
+  },
+  {
+    "name": "Clojure"
+  },
+  {
+    "name": "QML"
+  },
+  {
+    "name": "CSS"
+  },
+  {
+    "name": "Forth"
+  },
+  {
+    "name": "Prolog"
+  },
+  {
+    "name": "Mathematica"
+  },
+  {
+    "name": "TypeScript"
+  },
+  {
+    "name": "Clarion"
+  },
+  {
+    "name": "Logos"
+  },
+  {
+    "name": "Cuda"
+  },
+  {
+    "name": "Blade"
+  },
+  {
+    "name": "Less"
+  },
+  {
+    "name": "q"
+  },
+  {
+    "name": "Makefile"
+  },
+  {
+    "name": "Python"
+  },
+  {
+    "name": "Batchfile"
+  },
+  {
+    "name": "LabVIEW"
+  },
+  {
+    "name": "Dockerfile"
+  },
+  {
+    "name": "NSIS"
+  },
+  {
+    "name": "MATLAB"
+  },
+  {
+    "name": "QMake"
+  }
+]
