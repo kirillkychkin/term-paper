@@ -171,14 +171,26 @@ def tag_repo(description_text, readme_text):
     
     return repo_tags_listed
 
+def get_eng_readme(repo):
+    if(repo['readme_lang'] == 'en'):
+        return repo['readme_text']
+    else:
+        return repo['translated_readme_text']
+    
+def get_eng_description(repo):
+    if(repo['description_lang'] == 'en'):
+        return repo['description']
+    else:
+        return repo['translated_description']
+
 def tag_repositories(repositories):
     tagged_repos = []
     counter = 1
     for repo in repositories:
         if(counter > 10):
             continue
-        readme_clean = clean_text(repo['readme_text']) 
-        description_clean = clean_text(repo['description'])
+        readme_clean = clean_text(get_eng_readme(repo)) 
+        description_clean = clean_text(get_eng_description(repo))
         repo['tags'] = tag_repo(description_clean, readme_clean) 
         counter += 1
         tagged_repos.append(repo)
