@@ -19,19 +19,28 @@ def insert_repositories(data):
     for repo in data:
         translated_readme_text = None
         readme_russian = None
-        
+        readme_lang = None
+        readme = None
+
+        if 'readme_text' in repo:
+            readme = ['readme_text']
         if 'readme_lang' in repo:
+            readme_lang = repo['readme_lang']
             if(repo['readme_lang'] != 'en'):
                 translated_readme_text = repo['translated_readme_text']
             if(repo['readme_lang'] != 'ru'):
                 readme_russian = repo['readme_russian']
-        else:
-            repo['readme_text'] = ""
 
         translated_description = None
         description_russian = None
+        description_lang = None
+        description = None
+        
+        if 'description' in repo:
+            description = ['description']
 
         if 'description_lang' in repo:
+            description_lang = repo['description_lang']
             if(repo['description_lang'] != 'en'):
                 translated_description = repo['translated_description']
             if(repo['description_lang'] != 'ru'):
@@ -41,12 +50,12 @@ def insert_repositories(data):
 
         repository = (repo['name'], 
                       repo['url'],
-                      repo['readme_text'],
-                      repo['readme_lang'],
+                      readme,
+                      readme_lang,
                       translated_readme_text,
                       readme_russian,
-                      repo['description'],
-                      repo['description_lang'],
+                      description,
+                      description_lang,
                       translated_description,
                       description_russian
                     )
