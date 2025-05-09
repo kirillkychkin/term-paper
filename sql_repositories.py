@@ -81,7 +81,7 @@ def insert_repositories(data):
 
 def main():
     data = read_json_file()
-    insert_repositories(data[:10])
+    insert_repositories(data)
 
 if __name__ == "__main__":
     main()
