@@ -52,31 +52,31 @@ def insert_repositories(data):
                     )
         repositories.append(repository)
 
-    # try:
-    #     cnx = mysql.connector.connect(
-    #         host=DB_HOST,
-    #         user=DB_USER,
-    #         port=DB_PORT,
-    #         password=DB_PASSWORD,
-    #         database=DB_DATABASE
-    #     )
+    try:
+        cnx = mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            port=DB_PORT,
+            password=DB_PASSWORD,
+            database=DB_DATABASE
+        )
 
-    #     cursor = cnx.cursor()
-    #     query_insert = "INSERT INTO tags (name, tag_category_id) VALUES (%s, %s)"
+        cursor = cnx.cursor()
+        query_insert = "INSERT INTO repositories (name, url, readme_text, readme_lang, translated_readme_text, readme_russian, description, description_lang, translated_description, description_russian) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-    #     cursor.executemany(query_insert, tags)
-    #     cnx.commit()
+        cursor.executemany(query_insert, repositories)
+        cnx.commit()
         
-    #     results = cursor.fetchall()
-    #     print(results)
+        results = cursor.fetchall()
+        print(results)
 
-    # except mysql.connector.Error as err:
-    #     print(f"Error: {err}")
-    # finally:
-    #     if 'cursor' in locals() and cursor is not None:
-    #         cursor.close()
-    #     if 'cnx' in locals() and cnx is not None:
-    #         cnx.close()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        if 'cursor' in locals() and cursor is not None:
+            cursor.close()
+        if 'cnx' in locals() and cnx is not None:
+            cnx.close()
 
 
 def main():
