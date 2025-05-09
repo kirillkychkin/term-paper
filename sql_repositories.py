@@ -23,7 +23,7 @@ def insert_repositories(data):
         readme = None
 
         if 'readme_text' in repo:
-            readme = ['readme_text']
+            readme = repo['readme_text']
         if 'readme_lang' in repo:
             readme_lang = repo['readme_lang']
             if(repo['readme_lang'] != 'en'):
@@ -37,7 +37,7 @@ def insert_repositories(data):
         description = None
         
         if 'description' in repo:
-            description = ['description']
+            description = repo['description']
 
         if 'description_lang' in repo:
             description_lang = repo['description_lang']
@@ -75,9 +75,6 @@ def insert_repositories(data):
 
         cursor.executemany(query_insert, repositories)
         cnx.commit()
-        
-        results = cursor.fetchall()
-        print(results)
 
     except mysql.connector.Error as err:
         print(f"Error: {err}")
