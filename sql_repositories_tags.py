@@ -84,6 +84,7 @@ def insert_repositories(data):
                 repository = (repository_id, tag_id)
                 repositories_tags.append(repository)
         print("finish for repo #" + str(counter))
+        counter += 1
     try:
         cnx = mysql.connector.connect(
             host=DB_HOST,
