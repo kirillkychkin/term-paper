@@ -22,6 +22,13 @@ def insert_repositories(data):
         readme_lang = None
         readme = None
 
+        name = ""
+        url = ""
+        if 'name' in repo:
+            name = repo['name']
+        if 'url' in repo:
+            url = repo['url']
+
         if 'readme_text' in repo:
             readme = repo['readme_text']
         if 'readme_lang' in repo:
@@ -45,11 +52,9 @@ def insert_repositories(data):
                 translated_description = repo['translated_description']
             if(repo['description_lang'] != 'ru'):
                 description_russian = repo['description_russian']
-        else:
-            repo['description'] = ""
 
-        repository = (repo['name'], 
-                      repo['url'],
+        repository = (name, 
+                      url,
                       readme,
                       readme_lang,
                       translated_readme_text,
@@ -60,6 +65,7 @@ def insert_repositories(data):
                       description_russian
                     )
         repositories.append(repository)
+        # print(repository)
 
     try:
         cnx = mysql.connector.connect(
@@ -87,7 +93,7 @@ def insert_repositories(data):
 
 def main():
     data = read_json_file()
-    insert_repositories(data)
+    insert_repositories(data[:1000])
 
 if __name__ == "__main__":
     main()
